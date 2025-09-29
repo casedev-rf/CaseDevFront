@@ -1,9 +1,7 @@
 'use client'
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ProjectionsView } from "@/components/projections/projections-view";
 import { AllocationsView } from "@/components/allocations/allocations-view";
 import { HistoryView } from "@/components/history/history-view";
@@ -21,7 +19,10 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <header className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-4">Multi Family Office</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-4">Multi Family Office</h1>
+            <ThemeToggle />
+          </div>
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

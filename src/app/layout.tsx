@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const workSans = Work_Sans({ 
   subsets: ["latin"],
@@ -19,13 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`dark ${workSans.variable}`}>
+    <html lang="pt-BR" className={workSans.variable} suppressHydrationWarning>
       <body
         className="antialiased bg-background text-foreground font-sans"
       >
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <ThemeProvider defaultTheme="dark">
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
