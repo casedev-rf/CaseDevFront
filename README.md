@@ -32,8 +32,6 @@ Desenvolvido em Next.js + React + TypeScript, com interface responsiva, sistema 
 - **ESLint** (padronização de código)
 - **PostCSS** + **Autoprefixer** (compatibilidade CSS)
 
-
-
 ## 📋 Índice
 
 - [🎯 Sobre o Projeto](#-sobre-o-projeto)
@@ -52,7 +50,6 @@ Desenvolvido em Next.js + React + TypeScript, com interface responsiva, sistema 
 - [📈 Performance](#-performance)
 - [🤝 Contribuição](#-contribuição)
 
-
 ## 🎯 Sobre o Projeto
 
 O **Multi Family Office Frontend** é uma aplicação moderna e responsiva para gestão patrimonial, oferecendo ferramentas avançadas de projeção financeira, controle de alocações e análise de cenários. Desenvolvido com as mais recentes tecnologias do ecossistema React/Next.js.
@@ -65,7 +62,6 @@ O **Multi Family Office Frontend** é uma aplicação moderna e responsiva para 
 - **📱 Mobile-First**: Interface totalmente responsiva
 - **🌙 Dark/Light Mode**: Sistema de temas com persistência
 - **⚡ Performance**: Otimizado com React Query e Next.js
-
 
 ## ✨ Funcionalidades
 
@@ -104,7 +100,6 @@ O **Multi Family Office Frontend** é uma aplicação moderna e responsiva para 
 - **Acessibilidade**: ARIA labels e navegação por teclado
 - **Feedback Visual**: Loading states e animações suaves
 
-
 ## 🛠 Tecnologias
 
 ### **🏗 Core Framework**
@@ -139,7 +134,6 @@ O **Multi Family Office Frontend** é uma aplicação moderna e responsiva para 
 - **clsx** - Manipulação de classes CSS
 - **tailwind-merge** - Merge inteligente de classes Tailwind
 - **class-variance-authority** - Variantes de componentes
-
 
 ## 🚀 Instalação
 
