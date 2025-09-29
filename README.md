@@ -49,6 +49,7 @@ Desenvolvido em Next.js + React + TypeScript, com interface responsiva, sistema 
 - [🧪 Estrutura do Projeto](#-estrutura-do-projeto)
 - [📈 Performance](#-performance)
 - [🤝 Contribuição](#-contribuição)
+- [📸 Screenshots](#-screenshots)
 
 ## 🎯 Sobre o Projeto
 
@@ -462,31 +463,11 @@ interface ProjectionData {
 - **Bundle Size**: Otimizado com tree-shaking
 
 
-## 🤝 Contribuição
+## 📸 Screenshots
 
-### **Como Contribuir**
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/amazing-feature`)
-3. Commit suas mudanças (`git commit -m 'Add amazing feature'`)
-4. Push para a branch (`git push origin feature/amazing-feature`)
-5. Abra um Pull Request
-
-### **Padrões de Código**
-- TypeScript para type safety
-- ESLint para consistência
-- Componentes funcionais com hooks
-- Props tipadas com interfaces
-
-### **Estrutura de Commits**
-```
-feat: adiciona nova funcionalidade
-fix: corrige bug existente  
-docs: atualiza documentação
-style: mudanças de formatação
-refactor: refactoring de código
-test: adiciona ou modifica testes
-```
-
+<div align="center">
+    <img width="990" height="1450" alt="image" src="https://github.com/user-attachments/assets/50025aab-9af0-405c-b821-8b5f9f1bfb72" />
+</div>
 
 <div align="center">
 
