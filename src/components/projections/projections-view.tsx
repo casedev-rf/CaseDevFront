@@ -28,6 +28,17 @@ export function ProjectionsView({ preSelectedSimulationId }: ProjectionsViewProp
   const { data: versions, isLoading: loadingVersions } = useSimulationVersions(selectedSimulationId || 0)
   const { data: backendProjectionData, isLoading: loadingProjection } = useProjection(selectedSimulationId || 0, lifeStatus)
   
+  // Debug: verificar dados da projeção
+  console.log('🔍 Debug Projeção:', {
+    selectedSimulationId,
+    selectedVersionId,
+    lifeStatus,
+    backendProjectionData,
+    loadingProjection,
+    simulationsCount: simulations?.length || 0,
+    versionsCount: versions?.length || 0
+  })
+  
   // Debug: verificar quando há múltiplas versões
   if (versions && versions.length > 1) {
     console.log('🔍 Simulação com múltiplas versões:', {
