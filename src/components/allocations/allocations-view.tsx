@@ -103,9 +103,9 @@ export function AllocationsView() {
       {/* Timeline de alocações */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
             <CardTitle className="text-lg">Timeline de alocações manuais</CardTitle>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Alocações:</span>
                 <Select value={filterType} onValueChange={setFilterType}>
@@ -122,7 +122,7 @@ export function AllocationsView() {
               
               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-orange-600 hover:bg-orange-700">
+                  <Button className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Adicionar
                   </Button>
@@ -192,20 +192,30 @@ function AllocationCard({
   }
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg bg-card gap-4 sm:gap-0">
       <div className="flex-1">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
           <h3 className="font-medium">{allocation.name}</h3>
-          {getTypeBadge(allocation.type)}
-          {allocation.hasFinancing && (
-            <Badge variant="outline">Financiado</Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {getTypeBadge(allocation.type)}
+            {allocation.hasFinancing && (
+              <Badge variant="outline">Financiado</Badge>
+            )}
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           Início: {formatDate(allocation.date)}
         </p>
+      </div>
+
+      <div className="flex flex-col sm:text-right w-full sm:w-auto">
+        <div className="text-lg font-semibold">{formatCurrency(allocation.value)}</div>
+        <p className="text-sm text-muted-foreground mb-2 sm:mb-0">
+          Última atualização: {formatDate(allocation.date)}
+        </p>
+        
         {allocation.hasFinancing && (
-          <div className="mt-2">
+          <div className="mt-2 mb-3 sm:mb-2">
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-orange-500 h-2 rounded-full" style={{ width: '30%' }}></div>
             </div>
@@ -214,20 +224,13 @@ function AllocationCard({
             </p>
           </div>
         )}
-      </div>
-
-      <div className="text-right">
-        <div className="text-lg font-semibold">{formatCurrency(allocation.value)}</div>
-        <p className="text-sm text-muted-foreground">
-          Última atualização: {formatDate(allocation.date)}
-        </p>
         
         <Dialog open={isUpdateModalOpen} onOpenChange={setIsUpdateModalOpen}>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
               size="sm" 
-              className="mt-2 text-orange-600 border-orange-600 hover:bg-orange-50"
+              className="text-orange-600 border-orange-600 hover:bg-orange-50 w-full sm:w-auto"
             >
               <TrendingUp className="w-4 h-4 mr-1" />
               Atualizar

@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { useHistory, useProjection, useDuplicateSimulation, useDeleteSimulation } from '@/hooks/useHistory'
 import { simulationVersionApi } from '@/lib/api-client'
@@ -14,13 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { MoreHorizontal, Eye, Copy, Trash2, PlayCircle } from 'lucide-react'
-import { SimulationWithVersions, SimulationVersion } from '@/types'
 
 interface HistoryViewProps {
   selectedClient: string
+  onViewInChart?: (simulationId: number) => void
 }
 
-export function HistoryView({ selectedClient }: HistoryViewProps) {
+export function HistoryView({ selectedClient, onViewInChart }: HistoryViewProps) {
   const [isAddSimulationModalOpen, setIsAddSimulationModalOpen] = useState(false)
   const [isProjectionModalOpen, setIsProjectionModalOpen] = useState(false)
   const [newSimulationName, setNewSimulationName] = useState('')
@@ -50,7 +49,17 @@ export function HistoryView({ selectedClient }: HistoryViewProps) {
     }
   }
 
-  const handleViewProjection = async (simulationId: number) => {
+  const handleViewProjection = (simulationId: number) => {
+    if (onViewInChart) {
+      // Navegar para a tab de projeção
+      onViewInChart(simulationId)
+    } else {
+      // Fallback para modal (comportamento antigo)
+      handleViewProjectionModal(simulationId)
+    }
+  }
+
+  const handleViewProjectionModal = async (simulationId: number) => {
     setLoadingProjection(true)
     setSelectedSimulationId(simulationId)
     
@@ -244,14 +253,14 @@ export function HistoryView({ selectedClient }: HistoryViewProps) {
 
             {/* Simulação Principal */}
             <div className="space-y-2">
-              <div className="bg-muted/30 rounded-lg">
-                <div className="grid grid-cols-4 gap-4 p-3 text-xs font-medium text-muted-foreground border-b border-border/50">
+              <div className="bg-muted/30 rounded-lg overflow-x-auto">
+                <div className="grid grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-3 text-xs font-medium text-muted-foreground border-b border-border/50 min-w-[600px] sm:min-w-0">
                   <div>Data</div>
                   <div>Patrimônio final</div>
                   <div>Data de Aposentadoria</div>
                   <div>Ações</div>
                 </div>
-                <div className="grid grid-cols-4 gap-4 p-3 text-sm">
+                <div className="grid grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-3 text-sm min-w-[600px] sm:min-w-0">
                   <div className="text-muted-foreground">
                     {formatDate(new Date().toISOString())} {/* Data simulada */}
                   </div>
@@ -384,15 +393,15 @@ export function HistoryView({ selectedClient }: HistoryViewProps) {
             ) : projectionData.length > 0 ? (
               <div className="space-y-4">
                 <h4 className="font-medium">Projeção Ano a Ano</h4>
-                <div className="bg-muted/30 rounded-lg max-h-96 overflow-y-auto">
-                  <div className="grid grid-cols-4 gap-4 p-3 text-xs font-medium text-muted-foreground border-b border-border/50 sticky top-0 bg-muted/30">
+                <div className="bg-muted/30 rounded-lg max-h-96 overflow-y-auto overflow-x-auto">
+                  <div className="grid grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-3 text-xs font-medium text-muted-foreground border-b border-border/50 sticky top-0 bg-muted/30 min-w-[600px] sm:min-w-0">
                     <div>Ano</div>
                     <div>Patrimônio Total</div>
                     <div>Patrimônio Financeiro</div>
                     <div>Patrimônio Imobilizado</div>
                   </div>
                   {projectionData.map((item, index) => (
-                    <div key={index} className="grid grid-cols-4 gap-4 p-3 text-sm border-b border-border/30 last:border-b-0">
+                    <div key={index} className="grid grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-3 text-sm border-b border-border/30 last:border-b-0 min-w-[600px] sm:min-w-0">
                       <div className="text-muted-foreground">
                         {item.year || 2025 + index}
                       </div>

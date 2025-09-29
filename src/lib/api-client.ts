@@ -149,9 +149,15 @@ export const allocationApi = {
     await api.delete(`/allocations/${id}`)
   },
 
-  // Atualizar valor da alocação
+  // Atualizar valor da alocação (usando PUT existente)
   updateValue: async (id: number, value: number): Promise<Allocation> => {
-    const response = await api.patch(`/allocations/${id}/value`, { value })
+    // Primeiro buscar a alocação atual
+    const currentAllocation = await api.get(`/allocations/${id}`)
+    // Depois atualizar apenas o valor
+    const response = await api.put(`/allocations/${id}`, {
+      ...currentAllocation.data,
+      value
+    })
     return response.data
   }
 }
@@ -172,8 +178,8 @@ export const eventApi = {
   },
 
   // Criar evento
-  create: async (versionId: number, data: EventCreateData): Promise<Event> => {
-    const response = await api.post(`/simulation-versions/${versionId}/events`, data)
+  create: async (simulationId: number, data: EventCreateData): Promise<Event> => {
+    const response = await api.post(`/simulations/${simulationId}/events`, data)
     return response.data
   },
 

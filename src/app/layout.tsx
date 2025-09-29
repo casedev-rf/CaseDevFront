@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const workSans = Work_Sans({ 
+  subsets: ["latin"],
+  variable: "--font-work-sans"
+});
 
 export const metadata: Metadata = {
   title: "Multi Family Office",
@@ -16,9 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" className={`dark ${workSans.variable}`}>
       <body
-        className={`${inter.className} antialiased bg-background text-foreground`}
+        className="antialiased bg-background text-foreground font-sans"
       >
         <QueryProvider>
           {children}
