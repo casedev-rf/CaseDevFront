@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,11 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { useSimulations, useSimulationVersions } from "@/hooks/useSimulations"
 import { useAllocations, useCreateAllocation, useUpdateAllocation } from "@/hooks/useAllocations"
-import { Plus, Calendar, TrendingUp } from "lucide-react"
+import { Plus, TrendingUp } from "lucide-react"
 import { AllocationCreateData } from "@/types"
 
 export function AllocationsView() {
@@ -65,7 +63,7 @@ export function AllocationsView() {
       id: allocationId,
       data: { 
         value: newValue, 
-        date: new Date().toISOString() // Data atual no formato ISO
+        date: new Date().toISOString()
       }
     })
   }
@@ -83,7 +81,7 @@ export function AllocationsView() {
             value={selectedSimulationId?.toString() || ""} 
             onValueChange={(value) => {
               setSelectedSimulationId(Number(value))
-              setSelectedVersionId(null) // Reset version when simulation changes
+              setSelectedVersionId(null)
             }}
           >
             <SelectTrigger className="w-48">
@@ -300,7 +298,7 @@ function AddAllocationModal({
     e.preventDefault()
     
     const data: AllocationCreateData = {
-      simulationVersionId: 0, // Será preenchido pelo componente pai
+      simulationVersionId: 0,
       name: formData.name,
       type: formData.type,
       value: parseFloat(formData.value),

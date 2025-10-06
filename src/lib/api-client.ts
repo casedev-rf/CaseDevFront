@@ -104,9 +104,22 @@ export const simulationVersionApi = {
 
   // Obter projeção (usar simulationId, não versionId)
   getProjection: async (simulationId: number, status: 'Vivo' | 'Morto' | 'Inválido'): Promise<ProjectionData[]> => {
+    console.log('🚀 API Client - Fazendo requisição:', `POST /simulations/${simulationId}/projection`, { status })
+    
     const response = await api.post(`/simulations/${simulationId}/projection`, {
       status
     })
+    
+    console.log('📨 API Client - Resposta completa:', response)
+    console.log('📊 API Client - response.data:', response.data)
+    console.log('🎯 API Client - response.data.projection:', response.data.projection)
+    
+    if (response.data.projection && response.data.projection.length > 0) {
+      console.log('📋 API Client - Primeiro objeto da projeção:', response.data.projection[0])
+      console.log('🔍 API Client - Keys do primeiro objeto:', Object.keys(response.data.projection[0]))
+      console.log('💰 API Client - Values do primeiro objeto:', Object.values(response.data.projection[0]))
+    }
+    
     return response.data.projection || []
   }
 }

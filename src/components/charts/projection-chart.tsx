@@ -1,5 +1,4 @@
 'use client'
-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { formatCurrency } from '@/lib/utils'
 import { ProjectionData } from '@/types'
@@ -41,8 +40,43 @@ export function ProjectionChart({ data = [], showComparison = false, lifeStatus 
     ]
   }
 
+  // Debug: Verificar estrutura dos dados do backend
+  console.log('📊 ProjectionChart Debug:', {
+    data,
+    dataLength: data?.length,
+    dataType: typeof data,
+    firstItem: data?.[0],
+    firstItemKeys: data?.[0] ? Object.keys(data[0]) : [],
+    activeScenario,
+    mockDataLength: scenarioData[activeScenario].length
+  })
+  
+  // Debug: Comparar estrutura backend vs mock
+  if (data && data.length > 0) {
+    console.log('🔍 Backend Structure:', {
+      firstItem: data[0],
+      keys: Object.keys(data[0]),
+      values: Object.values(data[0]),
+      fullObject: JSON.stringify(data[0], null, 2)
+    })
+    
+    console.log('🔍 Mock Structure:', {
+      firstItem: scenarioData[activeScenario][0],
+      keys: Object.keys(scenarioData[activeScenario][0]),
+      values: Object.values(scenarioData[activeScenario][0])
+    })
+    
+    console.log('🔍 First 3 Backend Items:', data.slice(0, 3))
+  }
+
   // Use dados reais do backend ou dados específicos do cenário
   const chartData = data && data.length > 0 ? data : scenarioData[activeScenario]
+  
+  console.log('📈 ChartData Final:', {
+    isUsingBackendData: data && data.length > 0,
+    chartDataLength: chartData.length,
+    firstChartItem: chartData[0]
+  })
 
   return (
     <div className="w-full h-72 sm:h-80 lg:h-96">

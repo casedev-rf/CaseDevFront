@@ -1,7 +1,7 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils"
-import { ProjectionData } from "@/types"
+import { ProjectionData, Event } from "@/types"
 
 interface TimelineEvent {
   year: number
@@ -9,6 +9,7 @@ interface TimelineEvent {
   label: string
   value?: number
   description?: string
+  frequency?: string
 }
 
 interface TimelineValue {
@@ -19,7 +20,7 @@ interface TimelineValue {
 interface TimelineProps {
   startYear?: number
   endYear?: number
-  events?: TimelineEvent[]
+  events?: Event[]  // Mudança: agora usa Event[] do backend
   projectionData?: ProjectionData[]
   lifeStatus?: 'Vivo' | 'Morto' | 'Inválido'
 }
@@ -40,11 +41,10 @@ export function Timeline({
       years.push(year)
     }
     
-    // Se temos dados reais, incluir anos com eventos importantes
-    if (projectionData && projectionData.length > 0) {
-      const eventYears = events.map(e => e.year).filter(year => 
-        year >= startYear && year <= endYear && !years.includes(year)
-      )
+    // Incluir anos com eventos reais
+    if (events && events.length > 0) {
+      const eventYears = events.map(e => new Date(e.startDate).getFullYear())
+        .filter(year => year >= startYear && year <= endYear && !years.includes(year))
       years.push(...eventYears)
       years.sort((a, b) => a - b)
     }
@@ -73,6 +73,8 @@ export function Timeline({
             value: exactData.totalPatrimony,
             label: valueInMillions >= 1 
               ? `R$ ${valueInMillions.toFixed(1)}M`
+              : valueInMillions >= 0.1
+              ? `R$ ${(valueInMillions * 1000).toFixed(0)}K`
               : formatCurrency(exactData.totalPatrimony)
           }
         } else {
@@ -91,6 +93,8 @@ export function Timeline({
               value: interpolatedValue,
               label: valueInMillions >= 1 
                 ? `R$ ${valueInMillions.toFixed(1)}M`
+                : valueInMillions >= 0.1
+                ? `R$ ${(valueInMillions * 1000).toFixed(0)}K`
                 : formatCurrency(interpolatedValue)
             }
           } else if (beforeData) {
@@ -100,6 +104,8 @@ export function Timeline({
               value: beforeData.totalPatrimony,
               label: valueInMillions >= 1 
                 ? `R$ ${valueInMillions.toFixed(1)}M`
+                : valueInMillions >= 0.1
+                ? `R$ ${(valueInMillions * 1000).toFixed(0)}K`
                 : formatCurrency(beforeData.totalPatrimony)
             }
           }
@@ -130,36 +136,94 @@ export function Timeline({
 
   const timelineValues = getTimelineValues()
 
-  // Eventos específicos baseados nos dados ou fallback
+  // Converter eventos do backend para formato da timeline
   const getTimelineEvents = (): TimelineEvent[] => {
-    if (events.length > 0) {
-      return events
-    }
-    
-    // Eventos padrão baseados no status de vida
-    const defaultEvents: TimelineEvent[] = [
-      { year: 2025, type: 'income', label: 'CLT', value: 15000, description: 'R$ 15.000' },
-    ]
-    
-    // Adicionar aposentadoria baseada no status
-    if (lifeStatus === 'Vivo') {
-      defaultEvents.push({ 
-        year: 2055, 
-        type: 'income', 
-        label: 'Aposentadoria', 
-        value: 25000, 
-        description: 'R$ 25.000' 
+    if (events && events.length > 0) {
+      return events.map(event => {
+        const year = new Date(event.startDate).getFullYear()
+        const isIncome = event.type === 'entrada' || event.type === 'herança' || event.type === 'aposentadoria' || event.type === 'comissão'
+        
+        // Mapear tipos do backend para labels mais amigáveis
+        const getEventLabel = (type: string): string => {
+          const labelMap: Record<string, string> = {
+            'entrada': 'Entrada',
+            'saída': 'Saída', 
+            'herança': 'Herança',
+            'aposentadoria': 'Aposentadoria',
+            'comissão': 'Comissão',
+            'custo': 'Custo',
+            'outros': 'Outros'
+          }
+          return labelMap[type] || type
+        }
+
+        // Formatar descrição baseada na frequência
+        const getEventDescription = (value: number, frequency: string): string => {
+          const formattedValue = formatCurrency(value)
+          switch (frequency) {
+            case 'única':
+              return formattedValue
+            case 'mensal':
+              return `${formattedValue}/mês`
+            case 'anual':
+              return `${formattedValue}/ano`
+            default:
+              return formattedValue
+          }
+        }
+
+        return {
+          year,
+          type: isIncome ? 'income' : 'expense',
+          label: getEventLabel(event.type),
+          value: event.value,
+          description: getEventDescription(event.value, event.frequency),
+          frequency: event.frequency
+        }
       })
     }
     
-    return defaultEvents
+    // Fallback: eventos padrão apenas se não houver eventos reais
+    return []
   }
 
   const timelineEvents = getTimelineEvents()
 
-  // Calcular posição no timeline
+  // Debug específico dos eventos na Timeline
+  console.log('📅 TIMELINE EVENTOS DEBUG:', {
+    'Eventos originais recebidos': events?.map(e => ({
+      tipo: e.type,
+      valor: e.value,
+      dataInicio: e.startDate,
+      ano: new Date(e.startDate).getFullYear(),
+      'Está no range?': new Date(e.startDate).getFullYear() >= startYear && new Date(e.startDate).getFullYear() <= endYear
+    })),
+    'Timeline events processados': timelineEvents.map(e => ({
+      year: e.year,
+      type: e.type,
+      label: e.label,
+      description: e.description
+    })),
+    'Anos da timeline': years,
+    'StartYear-EndYear': `${startYear}-${endYear}`,
+    'Eventos filtrados por ano': years.map(year => ({
+      ano: year,
+      eventos: timelineEvents.filter(e => e.year === year).map(e => e.label),
+      quantidadeEventos: timelineEvents.filter(e => e.year === year).length
+    }))
+  })
+
+  // Calcular posição no timeline sem margens laterais
   const getPositionPercent = (year: number) => {
-    return ((year - startYear) / (endYear - startYear)) * 100
+    const totalRange = endYear - startYear
+    const yearPosition = year - startYear
+    
+    // Se é o primeiro ano, posiciona em 5%
+    if (year === startYear) return 5
+    // Se é o último ano, posiciona em 95%  
+    if (year === endYear) return 95
+    // Para anos intermediários, distribui entre 5% e 95%
+    return 5 + ((yearPosition / totalRange) * 90)
   }
 
   // Filtrar eventos para o ano específico
@@ -173,12 +237,11 @@ export function Timeline({
         <CardTitle className="text-lg">Timeline</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative overflow-x-auto">
+        <div className="relative pb-4 overflow-visible">
           {/* Linha principal do timeline */}
-          <div className="relative h-20 sm:h-24 mb-4 sm:mb-6 min-w-[600px] sm:min-w-0">
+          <div className="relative h-24 sm:h-28 mb-4 sm:mb-6 w-full overflow-visible">
             {/* Linha horizontal */}
-            <div className="absolute top-10 sm:top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-red-400 via-orange-400 to-red-400"></div>
-            
+            <div className="absolute top-10 sm:top-12 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-green-400 to-blue-600 rounded-full shadow-lg"></div>
             {/* Marcadores de anos */}
             {years.map((year) => {
               const yearValue = timelineValues[year]
@@ -190,51 +253,81 @@ export function Timeline({
                   className="absolute transform -translate-x-1/2"
                   style={{ left: `${getPositionPercent(year)}%` }}
                 >
-                  {/* Valores patrimoniais acima da linha */}
-                  {yearValue && (
-                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                      <div className="text-xs sm:text-sm text-center text-blue-400 font-medium">
-                        {yearValue.label}
+                  <div className="relative group">
+                    {/* Área de hover expandida para o ano */}
+                    <div className="text-center max-w-20 cursor-pointer" style={{ marginTop: '30px' }}>
+                      <div className="text-sm text-gray-400 mb-1 truncate">
+                        {year}
                       </div>
+                      {yearValue && (
+                        <div className="text-xs text-blue-300 font-bold bg-gray-800/60 px-1 py-1 rounded border border-blue-400/30 truncate">
+                          {yearValue.label}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  
-                  {/* Ponto no timeline */}
-                  <div className="relative">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-400 rounded-full border-2 border-background absolute top-8 sm:top-10 left-1/2 transform -translate-x-1/2"></div>
-                    
-                    {/* Ano */}
-                    <div className="text-xs text-center text-muted-foreground whitespace-nowrap" style={{ marginTop: '50px' }}>
-                      {year}
-                    </div>
-                    
-                    {/* Eventos específicos (CLT, Aposentadoria) */}
-                    {eventsForYear.map((event, index) => (
-                      <div key={index} className="absolute top-12 sm:top-16 left-1/2 transform -translate-x-1/2">
-                        <div className="text-center">
-                          <div className={`text-xs font-medium whitespace-nowrap ${event.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
-                            {event.label}
+
+                    {/* Tooltip unificado - aparece no hover do ano ou ponto */}
+                    {(yearValue || eventsForYear.length > 0) && (
+                      <div className="absolute top-16 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[9999]">
+                        <div className="bg-gray-900/95 border border-gray-600 rounded-lg shadow-xl p-3 min-w-48 max-w-72">
+                          {yearValue && (
+                            <>
+                              <div className="text-blue-300 text-sm font-bold mb-1">
+                                {year}
+                              </div>
+                              <div className="text-white text-sm font-semibold">
+                                {yearValue.label}
+                              </div>
+                              <div className="text-gray-400 text-xs mb-2">
+                                Patrimônio Total
+                              </div>
+                            </>
+                          )}
+                          
+                          {/* Mostrar eventos se houver */}
+                          {eventsForYear.length > 0 && (
+                            <>
+                              {yearValue && <div className="border-t border-gray-600 pt-2 mt-2"></div>}
+                              <div className="text-white text-xs font-medium mb-2">
+                                {eventsForYear.length > 1 ? `${eventsForYear.length} Eventos:` : 'Evento:'}
+                              </div>
+                              <div className="space-y-1">
+                                {eventsForYear.map((event, index) => (
+                                  <div key={index} className="flex items-start gap-2 text-xs">
+                                    <div className={`w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0 ${
+                                      event.type === 'income' ? 'bg-green-400' : 'bg-red-400'
+                                    }`}></div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className={`font-medium ${
+                                        event.type === 'income' ? 'text-green-300' : 'text-red-300'
+                                      }`}>
+                                        {event.label}
+                                      </div>
+                                      <div className="text-gray-300 text-xs break-words">
+                                        {event.description}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                          
+                          {/* Setinha do tooltip */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
+                            <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-600"></div>
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )}
+
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Legenda de eventos principais */}
-          <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm mt-6 sm:mt-8">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full"></div>
-              <span className="text-green-400">CLT R$ 15.000</span>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full"></div>
-              <span>Aposentadoria R$ 25.000</span>
-            </div>
-          </div>
+
 
           {/* Linha de anos detalhada */}
           <div className="text-xs text-muted-foreground mt-3 sm:mt-4 hidden sm:block">
