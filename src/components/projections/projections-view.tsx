@@ -190,7 +190,7 @@ export function ProjectionsView({ preSelectedSimulationId }: ProjectionsViewProp
       .filter(e => e.type === 'entrada' || e.type === 'herança' || e.type === 'comissão')
       .reduce((total, e) => {
         const valor = e.frequency === 'mensal' ? e.value * 12 : 
-                     e.frequency === 'anual' ? e.value : 0
+                      e.frequency === 'anual' ? e.value : 0
         return total + valor
       }, 0)
     
@@ -198,7 +198,7 @@ export function ProjectionsView({ preSelectedSimulationId }: ProjectionsViewProp
       .filter(e => e.type === 'saída' || e.type === 'custo' || e.type === 'aposentadoria')
       .reduce((total, e) => {
         const valor = e.frequency === 'mensal' ? e.value * 12 : 
-                     e.frequency === 'anual' ? e.value : 0
+                      e.frequency === 'anual' ? e.value : 0
         return total + valor
       }, 0)
 
@@ -387,8 +387,6 @@ export function ProjectionsView({ preSelectedSimulationId }: ProjectionsViewProp
       endDate: ''
     })
   }
-
-
 
   // Selecionar a primeira simulação automaticamente (apenas se não há pré-seleção)
   const firstSimulation = simulations?.[0]

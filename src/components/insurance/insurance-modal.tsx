@@ -19,7 +19,7 @@ export function InsuranceModal({ versionId, trigger }: InsuranceModalProps) {
     simulationVersionId: versionId,
     name: '',
     startDate: new Date().toISOString().split('T')[0],
-    durationMonths: 120, // 10 anos por padrão
+    durationMonths: 120,
     premium: 0,
     insuredValue: 0
   })

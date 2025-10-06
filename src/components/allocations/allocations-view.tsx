@@ -1,17 +1,17 @@
 'use client'
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { AllocationCreateData } from "@/types"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
+import { formatCurrency, formatDate } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { formatCurrency, formatDate } from "@/lib/utils"
-import { useSimulations, useSimulationVersions } from "@/hooks/useSimulations"
-import { useAllocations, useCreateAllocation, useUpdateAllocation } from "@/hooks/useAllocations"
 import { Plus, TrendingUp } from "lucide-react"
-import { AllocationCreateData } from "@/types"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useAllocations, useCreateAllocation, useUpdateAllocation } from "@/hooks/useAllocations"
+import { useSimulations, useSimulationVersions } from "@/hooks/useSimulations"
+import { useState } from "react"
 
 export function AllocationsView() {
   const [selectedSimulationId, setSelectedSimulationId] = useState<number | null>(null)

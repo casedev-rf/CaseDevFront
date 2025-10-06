@@ -1,10 +1,10 @@
 'use client'
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { ProjectionsView } from "@/components/projections/projections-view";
 import { AllocationsView } from "@/components/allocations/allocations-view";
 import { HistoryView } from "@/components/history/history-view";
+import { ProjectionsView } from "@/components/projections/projections-view";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useState } from "react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("projecao");
